@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Data Bundle Hub</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        body { background: #0f172a; color: white; font-family: sans-serif; }
+        .glass { background: rgba(30, 41, 59, 0.7); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.1); }
+        .gradient-text { background: linear-gradient(to right, #38bdf8, #818cf8); -webkit-background-clip: text; color: transparent; }
+    </style>
+</head>
+<body class="p-4">
+
+    <!-- HEADER -->
+    <div class="flex justify-between items-center mb-8">
+        <h1 class="text-2xl font-bold gradient-text">DataHub 🚀</h1>
+        <div class="bg-blue-600 px-4 py-1 rounded-full text-sm font-bold">Login</div>
+    </div>
+
+    <!-- REGISTRATION FORM (Connects to your Backend) -->
+    <div id="auth-box" class="glass p-6 rounded-2xl mb-8">
+        <h2 class="text-xl font-bold mb-4">Create Account</h2>
+        <input id="phone" type="text" placeholder="Phone Number" class="w-full bg-slate-800 p-3 rounded-lg mb-3 border border-slate-600 text-white">
+        <input id="pass" type="password" placeholder="Password" class="w-full bg-slate-800 p-3 rounded-lg mb-4 border border-slate-600 text-white">
+        <button onclick="register()" class="w-full bg-gradient-to-r from-blue-600 to-indigo-600 p-3 rounded-lg font-bold shadow-lg">Sign Up</button>
+        <p id="msg" class="text-center mt-3 text-sm text-gray-400"></p>
+    </div>
+
+    <!-- PACKAGES DISPLAY -->
+    <h3 class="text-lg font-bold mb-4 text-gray-300">Available Bundles</h3>
+    <div class="grid gap-4">
+        <!-- MTN -->
+        <div class="glass p-4 rounded-xl flex justify-between items-center border-l-4 border-yellow-400">
+            <div>
+                <h4 class="font-bold text-yellow-400">MTN 1GB</h4>
+                <p class="text-xs text-gray-400">Non-Expiry</p>
+            </div>
+            <button class="bg-slate-800 px-4 py-2 rounded-lg text-sm font-bold">₵ 5.00</button>
+        </div>
+        <!-- TELECEL -->
+        <div class="glass p-4 rounded-xl flex justify-between items-center border-l-4 border-red-500">
+            <div>
+                <h4 class="font-bold text-red-500">Telecel 2GB</h4>
+                <p class="text-xs text-gray-400">Valid 30 Days</p>
+            </div>
+            <button class="bg-slate-800 px-4 py-2 rounded-lg text-sm font-bold">₵ 8.50</button>
+        </div>
+    </div>
+
+    <script>
+        async function register() {
+            const phone = document.getElementById('phone').value;
+            const password = document.getElementById('pass').value;
+            const msg = document.getElementById('msg');
+
+            if(!phone || !password) { msg.innerText = "Please fill all fields"; return; }
+
+            msg.innerText = "Processing...";
+            
+            try {
+                // Connecting to your existing FastAPI backend
+                const response = await fetch('/register', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ phone: phone, password: password })
+                });
+
+                const data = await response.json();
+                
+                if (response.ok) {
+                    msg.innerText = "✅ Success! User ID: " + data.id;
+                    msg.style.color = "#4ade80";
+                } else {
+                    msg.innerText = "❌ " + (data.detail || "Error occurred");
+                    msg.style.color = "#f87171";
+                }
+            } catch (error) {
+                msg.innerText = "❌ Connection Failed";
+            }
+        }
+    </script>
+</body>
+</html>
